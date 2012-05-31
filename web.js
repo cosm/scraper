@@ -13,13 +13,21 @@ app.get('/fetch', function(request, response) {
     done: function(errors, window) {
       var $ = window.$;
 
-      var output = ""
+      var output = {
+        version: "1.0.0",
+        datastreams: []
+      };
 
-      $(css_selector).each(function() {
-        output += $(this).text();
+      $(css_selector).each(function(index) {
+        output.datastreams.push({
+          id: index,
+          current_value: $(this).text()
+        });
       });
 
-      response.send(output);
+      var json = JSON.stringify(output)
+
+      response.send(json);
     }
   });
 });
