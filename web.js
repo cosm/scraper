@@ -4,8 +4,8 @@ var jsdom = require('jsdom');
 var jquery = 'http://code.jquery.com/jquery-1.7.2.min.js'
 
 app.get('/fetch', function(request, response) {
-  var url = request.query.url
-  var css_selector = request.query.css_selector
+  var url = decodeURIComponent(request.query.url);
+  var css_selector = decodeURIComponent(request.query.css_selector);
 
   jsdom.env({
     html: url,
