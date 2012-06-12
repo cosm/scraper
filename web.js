@@ -22,17 +22,30 @@ app.get('/fetch', function(request, response) {
         } else {
           var $ = window.$;
 
-          var output = {
-            version: "1.0.0",
-            datastreams: []
-          };
+          var elements = $(css_selector);
 
-          $(css_selector).each(function(index) {
-            output.datastreams.push({
-              id: index,
-              current_value: $(this).text()
+          if (elements.length > 0) {
+            var output = {
+              version: "1.0.0",
+              datastreams: []
+            };
+
+            elements.each(function(index) {
+              output.datastreams.push({
+                id: index,
+                current_value: $(this).text()
+              });
             });
-          });
+          } else {
+            var error = "No elements matched your css expression";
+
+            console.log(error);
+
+            var output = {
+              title: "Error",
+              errors: [error]
+            }
+          }
         }
       }
       catch(error) {
