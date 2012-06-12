@@ -11,23 +11,41 @@ app.get('/fetch', function(request, response) {
     html: url,
     scripts: [jquery],
     done: function(errors, window) {
-      var $ = window.$;
+      try {
+        if ( errors != null && errors.length > 0 ) {
+          console.log(errors)
 
-      var output = {
-        version: "1.0.0",
-        datastreams: []
-      };
+          var output = {
+            title: "Error",
+            errors: errors
+          }
+        } else {
+          var $ = window.$;
 
-      $(css_selector).each(function(index) {
-        output.datastreams.push({
-          id: index,
-          current_value: $(this).text()
-        });
-      });
+          var output = {
+            version: "1.0.0",
+            datastreams: []
+          };
+
+          $(css_selector).each(function(index) {
+            output.datastreams.push({
+              id: index,
+              current_value: $(this).text()
+            });
+          });
+        }
+      }
+      catch(error) {
+        console.log(error);
+
+        var output = {
+          title: "Error",
+          errors: [error.message]
+        }
+      }
 
       var json = JSON.stringify(output)
-
-      response.send(json);
+      response.send(json + "\n");
     }
   });
 });
