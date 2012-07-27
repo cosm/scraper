@@ -3,6 +3,18 @@ var app = express.createServer(express.logger());
 var jsdom = require('jsdom');
 var jquery = 'http://code.jquery.com/jquery-1.7.2.min.js'
 
+function sendError(response, errors) {
+  response.statusCode = 422;
+  console.log(errors);
+
+  var json = JSON.stringify({
+    title: "Error",
+    errors: errors
+  });
+
+  response.send(json + "\n");
+}
+
 app.get('/fetch', function(request, response) {
   var url = decodeURIComponent(request.query.url);
   var css_selector = decodeURIComponent(request.query.css_selector);
@@ -13,15 +25,9 @@ app.get('/fetch', function(request, response) {
     done: function(errors, window) {
       try {
         if ( errors != null && errors.length > 0 ) {
-          console.log(errors)
-
-          var output = {
-            title: "Error",
-            errors: errors
-          }
+          return sendError(response, errors);
         } else {
           var $ = window.$;
-
           var elements = $(css_selector);
 
           if (elements.length > 0) {
@@ -36,29 +42,17 @@ app.get('/fetch', function(request, response) {
                 current_value: $(this).text()
               });
             });
+
+            var json = JSON.stringify(output)
+            response.send(json + "\n");
           } else {
-            var error = "No elements matched your css expression";
-
-            console.log(error);
-
-            var output = {
-              title: "Error",
-              errors: [error]
-            }
+            return sendError(response, ["No elements matched your css expression"]);
           }
         }
       }
       catch(error) {
-        console.log(error);
-
-        var output = {
-          title: "Error",
-          errors: [error.message]
-        }
+        return sendError(response, [error.message]);
       }
-
-      var json = JSON.stringify(output)
-      response.send(json + "\n");
     }
   });
 });
