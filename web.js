@@ -38,7 +38,7 @@ app.get('/fetch', function(request, response) {
 
             elements.each(function(index) {
               output.datastreams.push({
-                id: index,
+                id: index + '',
                 current_value: $(this).text()
               });
             });
